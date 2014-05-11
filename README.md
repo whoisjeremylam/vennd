@@ -1,7 +1,7 @@
 Vennd
 =====
 
-Vennd is a general purpose gateway service between bitcoind (or any other bitcoind API compatible alt-coin) and Counterparty. In its simplest form, Vennd allows you to create a gateway to frictionlessly between your alt-coin and trade it on the Counterparty distributed exchange.
+Vennd is a general purpose gateway service between bitcoind (or any other bitcoind API compatible alt-coin) and Counterparty. In its simplest form, Vennd allows you to create a frictionless gateway between your alt-coin blockchain and trade it on the Counterparty distributed exchange.
 
 Feel free to contact me jeremy@vend.io on just about anything.
 
@@ -13,7 +13,7 @@ Feel free to contact me jeremy@vend.io on just about anything.
 
 Pre-requisites
 ==============
-* Bitcoin installed and blockchain synchronised with txindex=1 http://counterpartyd-build.readthedocs.org/en/latest/SettingUpBitcoind.html
+* Bitcoin installed and blockchain synchronised with txindex=1 as per http://counterpartyd-build.readthedocs.org/en/latest/SettingUpBitcoind.html
 * Counterpartyd installed as per http://counterpartyd-build.readthedocs.org/en/latest/BuildingFromSource.html#on-linux
 
 

@@ -77,7 +77,7 @@ class PaymentAddressServer {
             // Create a router Restlet that routes each call to a new instance of HelloWorldResource.
             Router router = new Router(getContext())
 
-            router.attach("/generateAddress", PaymentAddressServerResource.class)
+            router.attach("/address", PaymentAddressServerResource.class)
 
             return router
         }

@@ -20,12 +20,19 @@ Pre-requisites
 Requirements
 ============
 
-Vennd was developed and tested on Ubuntu 12.04 LTS. The following is the recommended specifications for a server running Vennd:
+The following is the recommended specifications for a server running Vennd:
 
+* Windows 7 or higher or Ubuntu 12.04 LTS
 * 4 GB of RAM or higher, SSD with at least 128GB free space
-* Ubuntu 12.04 LTS
 * Groovy 1.89 or higher. Groovy 2.3 is recommended because of JSON parsing performance improvements. It is recommended to run Vennd with the --indy parameter to enable InvokeDynamic support (http://groovy.codehaus.org/InvokeDynamic+support).
 * Oracle JDK 1.7 or higher
+
+
+Installation
+============
+
+The Linux installation guide can be found at https://github.com/whoisjeremylam/vennd/doc/linux_install.md
+The Windows installation guide can be found at https://github.com/whoisjeremylam/vennd/doc/windows_install.md
 
 
 Configuration
@@ -36,7 +43,7 @@ It is recommended that all of the processes for a single instance of a vending m
 Sample configuration to set up a gateway service for an alt-coin based upon Bitcoin.
 
 **VenndNativeFollower.ini**
-```
+```ini
 testMode = false
 
 inceptionBlock = 300043         // The block to start listening for service requests -1. ie start listening on block 300044

@@ -1,3 +1,8 @@
+Create a gateway to trade an alt-coin on the Counterparty DEX
+=============================================================
+
+Prior to creating the gateway, create an asset in Counterparty which represents your alt-coin. 
+
 Sample configuration to set up a gateway service for an alt-coin based upon Bitcoin.
 
 **VenndNativeFollower.ini**

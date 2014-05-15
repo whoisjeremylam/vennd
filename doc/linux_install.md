@@ -2,12 +2,28 @@ Linux Installation Guide
 ========================
 Vennd was developed and targeted to run on Ubuntu 12.04 LTS server.
 
+Update Server
+Update the Ubuntu server and install dependencies
+```
+sudo apt-get update
+sudo apt-get install unzip
+sudo apt-get install python-software-properties
+sudo apt-get install git-core python3
+```
+
 Install Groovy
 ==============
 The version of Groovy that is contained in the default repository is 1.8.6.
 
 ```
 sudo apt-get install groovy
+```
+
+Or install Groovy 2.3.0 (preferred)
+
+```
+wget http://dl.bintray.com/groovy/maven/groovy-binary-2.3.0.zip
+unzip groovy-binary-2.3.0.zip
 ```
 
 Download Sqlite

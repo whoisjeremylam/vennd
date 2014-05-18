@@ -82,3 +82,9 @@ sudo chmod +r /var/www/recaptchalib.php
 sudo cp vennd/generate.html /var/www
 sudo cp vennd/generate.php /var/www
 ```
+
+Download HTTPFUL
+================
+```
+wget http://phphttpclient.com/downloads/httpful.phar
+```

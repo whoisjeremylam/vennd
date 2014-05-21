@@ -58,24 +58,24 @@ git clone https://github.com/whoisjeremylam/vennd
 
 Install Apache and Web Page Dependencies
 ========================================
-The following commands will install Apache, PHP 5 and reCAPTCHA
+The following commands will install Apache, PHP 5 and reCAPTCHA and Httpful http://phphttpclient.com/
 
 ```
 sudo apt-get -y install apache2
 sudo apt-get -y install libapache2-mod-php5
 wget https://recaptcha.googlecode.com/files/recaptcha-php-1.11.zip
+wget http://phphttpclient.com/downloads/httpful.phar
 unzip recaptcha-php-1.11.zip
 sudo cp recaptchalib.php /var/www
+sudo cp httpful.phar /var/www
 sudo chmod +r /var/www/recaptchalib.php
 sudo cp vennd/generate.html /var/www
 sudo cp vennd/generate.php /var/www
 ```
 
 
-Download HTTPFUL
-================
-```
-
-```
-
-
+Next Steps
+==========
+Configure Vennd to form a gateway between Bitcoin (or a Bitcoin API compatible alt-coin) and Counterparty
+or
+Configure Vennd to create a vending machine

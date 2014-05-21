@@ -51,6 +51,8 @@ sudo apt-get -y install oracle-java7-installer
 Download Vennd
 ==============
 
+It is recommended that all of the processes for a single instance of a vending machine runs in the same directory. The sqlite database must be shared between each of the processes and the user permissions can be restricted to a single directory.
+
 ```
 git clone https://github.com/whoisjeremylam/vennd
 ```

@@ -76,6 +76,8 @@ sudo cp vennd/generate.php /var/www
 
 Next Steps
 ==========
-Configure Vennd to form a gateway between Bitcoin (or a Bitcoin API compatible alt-coin) and Counterparty
+Configure Vennd to form a gateway between Bitcoin (or a Bitcoin API compatible alt-coin) and Counterparty https://github.com/whoisjeremylam/vennd/blob/master/doc/gateway_configuration_guide.md
+
 or
+
 Configure Vennd to create a vending machine

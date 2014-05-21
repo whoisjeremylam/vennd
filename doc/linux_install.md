@@ -48,23 +48,6 @@ sudo apt-get update
 sudo apt-get -y install oracle-java7-installer
 ```
 
-
-Install bitcoind
-================
-```
-sudo add-apt-repository ppa:bitcoin/bitcoin
-sudo apt-get update
-sudo apt-get -y install bitcoind
-```
-
-Install Apache
-==============
-```
-sudo apt-get -y install apache2
-sudo apt-get -y install libapache2-mod-php5
-
-```
-
 Download Vennd
 ==============
 
@@ -72,9 +55,14 @@ Download Vennd
 git clone https://github.com/whoisjeremylam/vennd
 ```
 
-Download reCAPTCHA
-==================
+
+Install Apache and Web Page Dependencies
+========================================
+The following commands will install Apache, PHP 5 and reCAPTCHA
+
 ```
+sudo apt-get -y install apache2
+sudo apt-get -y install libapache2-mod-php5
 wget https://recaptcha.googlecode.com/files/recaptcha-php-1.11.zip
 unzip recaptcha-php-1.11.zip
 sudo cp recaptchalib.php /var/www
@@ -83,8 +71,11 @@ sudo cp vennd/generate.html /var/www
 sudo cp vennd/generate.php /var/www
 ```
 
+
 Download HTTPFUL
 ================
 ```
-wget http://phphttpclient.com/downloads/httpful.phar
+
 ```
+
+

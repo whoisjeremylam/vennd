@@ -65,7 +65,7 @@ sleepIntervalms = 1000
 **CounterpartyAPI.ini**
 
 Connection details to connect to counterpartyd. Please check your counterpartyd.conf file.
-```
+```ini
 counterparty.rpcURL = "http://127.0.0.1:4000"
 counterparty.rpcUser = "xcpRpc"
 counterparty.rpcPassword = "NYNEX"
@@ -75,7 +75,7 @@ counterparty.counterpartyMultisendPerBlock = true                             //
 
 
 **PaymentProcessor.ini**
-```
+```ini
 testMode = false
 
 bitcoin.walletPassphrase = "Imdyingtocatchmybreath"

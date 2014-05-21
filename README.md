@@ -31,21 +31,13 @@ Vennd was developed on Ubuntu 12.04 LTS and is the preferred platform to run Ven
 
 Installation
 ============
-The Linux installation guide can be found at https://github.com/whoisjeremylam/vennd/doc/linux_install.md
+The Linux installation guide can be found at https://github.com/whoisjeremylam/vennd/blob/master/doc/linux_install.md
 The Windows installation guide can be found at https://github.com/whoisjeremylam/vennd/doc/windows_install.md
 
 
 Configuration
 =============
+A sample configuration to configure Vennd as gateway for your Bitcoin compatible alt-coin https://github.com/whoisjeremylam/vennd/blob/master/doc/gateway_configuration_guide.md
 
-It is recommended that all of the processes for a single instance of a vending machine runs in the same directory. The sqlite database must be shared between each of the processes and the user permissions can be restricted to a single directory.
-
-How to configure a gateway service for your Bitcoin compatible alt-coin https://github.com/whoisjeremylam/vennd/blob/master/doc/gateway_configuration_guide.md
-
-How to configure a simple vending machine
+A sample configuration to configure Vennd as a simple vending machine
 https://github.com/whoisjeremylam/vennd/blob/master/doc/vendingmachine_configuration_guide.md
-
-
-Running Vennd
-==============
-Start 

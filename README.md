@@ -32,6 +32,7 @@ Vennd was developed on Ubuntu 12.04 LTS and is the preferred platform to run Ven
 Installation
 ============
 The Linux installation guide can be found at https://github.com/whoisjeremylam/vennd/blob/master/doc/linux_install.md
+
 The Windows installation guide can be found at https://github.com/whoisjeremylam/vennd/doc/windows_install.md
 
 

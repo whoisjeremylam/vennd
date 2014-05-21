@@ -2,7 +2,7 @@ Linux Installation Guide
 ========================
 Vennd was developed and targeted to run on Ubuntu 12.04 LTS server.
 
-Sign up for an API key at reCAPTCHA
+It is recommended to sign up for an API key at reCAPTCHA. reCAPTCHA is used on the address generation web page.
 https://www.google.com/recaptcha/admin#createsite
 
 Update the Ubuntu server

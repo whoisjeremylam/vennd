@@ -78,7 +78,7 @@ counterparty.counterpartyMultisendPerBlock = true                             //
 ```ini
 testMode = false
 
-bitcoin.walletPassphrase = "Imdyingtocatchmybreath"
+bitcoin.walletPassphrase = "Imdyingtocatchmybreath"                           // The wallet password currently needs to be the same for bitcoin and the alt-coin
 walletUnlockSeconds = 30
 
 database.name = "ltcGateway.db"

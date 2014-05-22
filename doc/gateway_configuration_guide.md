@@ -1,7 +1,9 @@
 Create a gateway to trade an alt-coin on the Counterparty DEX
 =============================================================
 
-Prior to creating the gateway, first create an asset in Counterparty which represents your alt-coin.
+Prior to creating the gateway, first create an asset in Counterparty which represents your alt-coin:
+https://www.youtube.com/watch?v=eyzA5Lj1ajM
+
 
 Each of the following INI files must be edited. Included below is a sample configuration which sets up a gateway service for Litecoin.
 

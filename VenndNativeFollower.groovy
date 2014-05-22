@@ -22,6 +22,7 @@ public class VenndNativeFollower {
     static BigDecimal txFee
     static assetConfig
     static String listenerAddress
+    static String paymentAddress
     static boolean testMode
     static int confirmationsRequired
     static int sleepIntervalms
@@ -95,7 +96,7 @@ public class VenndNativeFollower {
                 }
                 else {
                     // vanilla send - send from the central address the native equivalent to the address which sent this asset
-                    sourceAddress = listenerAddress
+                    sourceAddress = paymentAddress
                     destinationAddress = sourceAddressValue
                     outAsset = outAsset
                 }
@@ -121,6 +122,7 @@ public class VenndNativeFollower {
         txFee = iniConfig.txFee
         testMode = iniConfig.testMode
         listenerAddress = iniConfig.listenerAddress
+        paymentAddress = iniConfig.paymentAddress
         sleepIntervalms = iniConfig.sleepIntervalms
         databaseName = iniConfig.database.name
         confirmationsRequired = iniConfig.confirmationsRequired

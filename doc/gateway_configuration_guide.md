@@ -17,7 +17,7 @@ testMode = false
 
 inceptionBlock = 300043         // The block to start listening for service requests -1. ie start listening on block 300044
 feeAmountPercentage = 0.1       // Fee amount in percentage for the vending machine to take. eg 0.1%
-txFee = 0.0003172               // Fee in absolute value to take for the costs of Counterparty transaction transmission
+txFee = 0.0004172               // Fee in absolute value to take for the costs of Counterparty transaction transmission
 confirmationsRequired = 3
 
 listenerAddress = "LR5grCQB8FaxueX2UtvUbURho1qHuQrtFZ"    // The address which the gateway will receive the native alt-coin

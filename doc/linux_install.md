@@ -55,6 +55,7 @@ It is recommended that all of the processes for a single instance of a vending m
 
 ```
 git clone https://github.com/whoisjeremylam/vennd
+mkdir vennd/logs
 ```
 
 

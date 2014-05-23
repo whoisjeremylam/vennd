@@ -196,9 +196,9 @@ class BitcoinAPI {
     }
 
 
-    private init() {
+    private init(String iniFile) {
         // Read in ini file
-        def iniConfig = new ConfigSlurper().parse(new File("BitcoinAPI.ini").toURL())
+        def iniConfig = new ConfigSlurper().parse(new File(iniFile).toURL())
 
         rpcURL = iniConfig.rpcURL
         rpcUser = iniConfig.rpcUser
@@ -213,7 +213,13 @@ class BitcoinAPI {
     }
 
     public BitcoinAPI() {
-        init()
+        init("BitcoinAPI.ini")
+    }
+
+    public BitcoinAPI(String iniFile) {
+        init(iniFile)
+    }
+
     }
 
 }

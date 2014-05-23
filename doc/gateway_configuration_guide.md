@@ -42,6 +42,15 @@ rpcPassword = "supernova"
 ```
 
 
+**CounterpartyBitcoinAPI.ini**
+
+This contains connection information to connect to the bitcoind instance that counterpartyd is connected to. Please refer to bitcoind.conf file for these values.
+```ini
+rpcURL = "http://127.0.0.1:8332"
+rpcUser = "rpc"
+rpcPassword = "supernova"
+```
+
 **CounterpartyFollower.ini**
 
 CounterpartyFollower is the process which connects to counterpartyd and 'listens' if your Counterparty asset was sent on a payment address.

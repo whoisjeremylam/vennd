@@ -21,7 +21,7 @@ class PaymentProcessor {
 
     static logger
     static log4j
-    static groovyx.net.http.AsyncHTTPBuilder HttpAsync
+//    static groovyx.net.http.AsyncHTTPBuilder HttpAsync
     static db
 
 

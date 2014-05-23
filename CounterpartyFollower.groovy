@@ -124,7 +124,7 @@ class CounterpartyFollower {
 
     public init() {
         counterpartyAPI = new CounterpartyAPI()
-        bitcoinAPI = new BitcoinAPI()
+        bitcoinAPI = new BitcoinAPI("CounterpartyBitcoinAPI.ini")
 
         // Set up some log4j stuff
         logger = new Logger()

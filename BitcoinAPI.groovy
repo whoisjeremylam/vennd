@@ -220,6 +220,4 @@ class BitcoinAPI {
         init(iniFile)
     }
 
-    }
-
 }

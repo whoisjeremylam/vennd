@@ -234,8 +234,8 @@ class CounterpartyAPI {
         def myParams
 
         if (testMode == false) {
-//            myParams = [sourceAddress, destinationAddress, asset, amount, counterpartyTransactionEncoding, null, counterpartyMultisendPerBlock, null]
-            myParams = [sourceAddress, destinationAddress, asset, amount]
+            myParams = [sourceAddress, destinationAddress, asset, amount, counterpartyTransactionEncoding, null, counterpartyMultisendPerBlock, null]
+//            myParams = [sourceAddress, destinationAddress, asset, amount]
         }
         else {
             myParams = ['12nY87y6qf4Efw5WZaTwgGeceXApRYAwC7', '142UYTzD1PLBcSsww7JxKLck871zRYG5D3', asset, 20000, counterpartyTransactionEncoding, null, counterpartyMultisendPerBlock]  // in test mode send only just enough for dust

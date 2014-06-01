@@ -28,8 +28,6 @@ class CounterpartyFollower {
     static int confirmationsRequired
     static int sleepIntervalms
     static String databaseName
-    static db
-
     public class Asset {
         def String counterpartyAssetName
         def String nativeAssetName
@@ -39,8 +37,13 @@ class CounterpartyFollower {
         def BigDecimal feePercentage
         def int inceptionBlock
         def boolean mappingRequired
+        def issuanceDependent
+        def issuanceSource
+        def issuanceAsset
+        def issuanceDivisible
+        def issuanceDescription
 
-        public Asset(String counterpartyAssetNameValue, String nativeAssetNameValue, String counterpartyAddressValue, String nativeAddressValue, BigDecimal txFeeValue, BigDecimal feePercentageValue, boolean mappingRequiredValue) {
+        public Asset(String counterpartyAssetNameValue, String nativeAssetNameValue, String counterpartyAddressValue, String nativeAddressValue, BigDecimal txFeeValue, BigDecimal feePercentageValue, boolean mappingRequiredValue, boolean issuanceDependentValue, String issuanceSourceValue, String issuanceAssetValue, boolean issuanceDivisibleValue, String issuanceDescriptionValue) {
             counterpartyAssetName = counterpartyAssetNameValue
             nativeAssetName = nativeAssetNameValue
             counterpartyAddress = counterpartyAddressValue
@@ -48,8 +51,15 @@ class CounterpartyFollower {
             txFee = txFeeValue
             feePercentage = feePercentageValue
             mappingRequired = mappingRequiredValue
+            issuanceDependent = issuanceDependentValue
+            issuanceSource = issuanceSourceValue
+            issuanceAsset = issuanceAssetValue
+            issuanceDivisible = issuanceDivisibleValue
+            issuanceDescription = issuanceDescriptionValue
         }
     }
+
+    static db
 
     public class Payment {
         def String inAsset
@@ -124,7 +134,7 @@ class CounterpartyFollower {
 
     public init() {
         counterpartyAPI = new CounterpartyAPI()
-        bitcoinAPI = new BitcoinAPI("CounterpartyBitcoinAPI.ini")
+        bitcoinAPI = new BitcoinAPI()
 
         // Set up some log4j stuff
         logger = new Logger()
@@ -141,7 +151,19 @@ class CounterpartyFollower {
 
         assetConfig = []
         iniConfig.asset.each { it ->
-            def currentAsset = new Asset(it.value.counterpartyAssetName, it.value.nativeAssetName, it.value.counterpartyAddress, it.value.nativeAddress, it.value.txFee, it.value.feePercentage, it.value.mappingRequired)
+            def issuanceDependent
+            def issuanceSource
+            def issuanceAsset
+            def issuanceDivisible
+            def issuanceDescription
+
+            if (it.value.issuanceDependent instanceof groovy.util.ConfigObject) { issuanceDependent = false} else {issuanceDependent = it.value.issuanceDependent}
+            if (it.value.issuanceSource instanceof groovy.util.ConfigObject) { issuanceSource = ""} else {issuanceSource = it.value.issuanceSource}
+            if (it.value.issuanceAsset instanceof groovy.util.ConfigObject) { issuanceAsset = ""} else {issuanceAsset = it.value.issuanceAsset}
+            if (it.value.issuanceDivisible instanceof groovy.util.ConfigObject) { issuanceDivisible = true} else {issuanceDivisible = it.value.issuanceDivisible}
+            if (it.value.issuanceDescription instanceof groovy.util.ConfigObject) { issuanceDescription = ""} else {issuanceDescription = it.value.issuanceDescription}
+
+            def currentAsset = new Asset(it.value.counterpartyAssetName, it.value.nativeAssetName, it.value.counterpartyAddress, it.value.nativeAddress, it.value.txFee, it.value.feePercentage, it.value.mappingRequired, issuanceDependent, issuanceSource, issuanceAsset, issuanceDivisible, issuanceDescription)
             assetConfig.add(currentAsset)
         }
 
@@ -231,10 +253,12 @@ class CounterpartyFollower {
         def timeStop
         def duration
         def sends
+        def issuances
 
         timeStart = System.currentTimeMillis()
         sends = counterpartyAPI.getSends(currentBlock)
 
+        // Process sends
         log4j.info("Block ${currentBlock}: processing " + sends.size() + " sends")
         def transactions = []
         for (send in sends) {
@@ -332,6 +356,74 @@ class CounterpartyFollower {
             }
         }
 
+
+        issuances = counterpartyAPI.getIssuances(currentBlock)
+        // Process issuances
+        log4j.info("Block ${currentBlock}: processing " + issuances.size() + " issuances")
+//        def issuanceTransactions = []
+        for (issuance in issuances) {
+            assert issuance instanceof HashMap
+            def status
+
+            // Check if the issuance is one we are interested in
+            def notFound = true
+            def counter = 0
+            while (notFound && counter <= assetConfig.size()-1) {
+                if (issuance.source == assetConfig[counter].issuanceSource && issuance.asset == assetConfig[counter].issuanceAsset && assetConfig[counter].issuanceDependent == true) {
+                    notFound = false
+                }
+
+                counter++
+            }
+
+            if (notFound == false) {
+                def asset = issuance.asset
+                def quantity = issuance.quantity
+                def source = issuance.source
+                def divisible = issuance.divisible
+                def description = issuance.description
+                def destinationAddress
+                def matchingPayment
+                def rowId
+
+                assert issuance.locked != 1
+
+                // now match this issuance amount to the first payment that precisely matches this asset and description
+                matchingPayment = db.firstRow("select rowid,* from payments where outAsset = ${asset} and outAmount = ${quantity} and status = 'waitIssuance' order by rowid asc")
+
+                if (matchingPayment != null && matchingPayment[0] != null) {
+                    status = 'complete'
+                    destinationAddress = matchingPayment.destinationAddress
+                    rowId = matchingPayment.rowid
+                }
+                else {
+                    status = 'completedNoMatch'
+                    destinationAddress = ''
+                    rowId = 0
+                }
+
+                if (status == 'complete') {
+                    db.execute("begin transaction")
+                    try {
+                        log4j.info("update payments set status='authorized', lastUpdatedBlockId=${currentBlock} where rowid = ${rowId} and destinationAddress=${destinationAddress} and outAsset=${asset} and outAmount=${quantity} and status='waitIssuance'")
+                        db.execute("update payments set status='authorized', lastUpdatedBlockId=${currentBlock} where rowid = ${rowId} and destinationAddress=${destinationAddress} and outAsset=${asset} and outAmount=${quantity} and status='waitIssuance'")
+
+                        db.execute("commit transaction")
+                    } catch (Throwable e) {
+                        db.execute("update counterpartyBlocks set status='error', duration=0 where blockId = ${currentBlock}")
+                        log4j.info("Block ${currentBlock}: error")
+                        log4j.info("Exception: ${e}")
+                        db.execute("rollback transaction")
+                        assert e == null
+                    }
+                }
+
+//                issuanceTransactions.add([asset, quantity, source, destinationAddress, divisible, description, status])
+
+                log4j.info("Block ${currentBlock} found issuance : ${currentBlock} ${source} ${quantity} ${asset} divisibility=${divisible}, description=${description}, for destinationAddress=${destinationAddress}, status=${status}")
+            }
+        }
+
         // Insert into DB the transaction along with the order details
         db.execute("begin transaction")
         try {
@@ -372,6 +464,7 @@ class CounterpartyFollower {
                     db.execute("insert into payments values (${payment.currentBlock}, ${payment.txid}, ${payment.sourceAddress}, ${payment.destinationAddress}, ${payment.outAsset}, ${payment.outAmount}, ${payment.status}, ${payment.lastModifiedBlockId})")
                 }
             }
+
             db.execute("commit transaction")
         } catch (Throwable e) {
             db.execute("update counterpartyBlocks set status='error', duration=0 where blockId = ${currentBlock}")
@@ -412,7 +505,7 @@ class CounterpartyFollower {
             }
 
             // Check if we can process a block
-            while (counterpartyFollower.lastProcessedBlock() < currentBlock - 3) {
+            while (counterpartyFollower.lastProcessedBlock() < currentBlock - confirmationsRequired) {
                 currentProcessedBlock++
 
                 counterpartyFollower.processBlock(currentProcessedBlock)

@@ -1,7 +1,8 @@
 Create a gateway to trade an alt-coin on the Counterparty DEX
 =============================================================
 
-Prior to creating the gateway, first create an asset in Counterparty which represents your alt-coin:
+**Create Your Alt-coin on Counterparty**
+Prior to creating the gateway, first issue an asset in Counterparty which represents your alt-coin:
 https://www.youtube.com/watch?v=eyzA5Lj1ajM
 
 
@@ -10,7 +11,7 @@ Each of the following INI files must be edited. Included below is a sample confi
 
 **VenndNativeFollower.ini**
 
-VenndNativeFollower is the process which connects to the Bitcoin API compatible alt-coin. It 'listens' if your alt-coin was sent to a payment address. The coins from the payment address is then swept into the central holding address (listenerAddress).
+VenndNativeFollower is the process which connects to the Bitcoin API compatible alt-coin. It 'listens' for payments to the listner address. The coins listening addresss is then swept into the central holding address (paymentAddress).
 
 ```ini
 testMode = false

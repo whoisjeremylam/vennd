@@ -1,9 +1,5 @@
 Linux Installation Guide
 ========================
-Vennd was developed and targeted to run on Ubuntu 12.04 LTS server.
-
-It is recommended to sign up for an API key at reCAPTCHA. reCAPTCHA is used on the address generation web page.
-https://www.google.com/recaptcha/admin#createsite
 
 Update the Ubuntu server
 ========================
@@ -59,8 +55,13 @@ mkdir vennd/logs
 ```
 
 
-Install Apache and Web Page Dependencies
-========================================
+(Optional) Install Apache and Web Page Dependencies
+===================================================
+These steps are only necessary if you wish to run Vennd as a gateway between an alt-coin and Counterparty.
+
+Sign up for an API key at reCAPTCHA. reCAPTCHA is used on the address generation web page.
+https://www.google.com/recaptcha/admin#createsite
+
 The following commands will install Apache, PHP 5 and reCAPTCHA and Httpful http://phphttpclient.com/
 
 ```

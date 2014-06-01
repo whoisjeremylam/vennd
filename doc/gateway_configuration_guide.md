@@ -98,3 +98,10 @@ database.busyTimeout = 2000
 
 sleepIntervalms = 60000
 ```
+
+**Start Vennd**
+```sh
+groovy VenndNativeFollower.groovy
+groovy CounterpartyFollower.groovy
+groovy PaymentProcessor.groovy
+```

@@ -1,9 +1,11 @@
 Vennd
 =====
 
-Vennd is a general purpose gateway service between bitcoind (or any other bitcoind API compatible alt-coin) and Counterparty. In its simplest form, Vennd allows you to create a frictionless gateway between your alt-coin blockchain and trade it on the Counterparty distributed exchange.
+Vennd is a general purpose digital vending machine. Send Bitcoins to the digital vending machine and it will send back the corresponding Counterparty token. Vennd can be configured as a gateway to enable trading on the Counterparty decentralized exchange for any Bitcoin compatible alt-coin.
 
-Feel free to contact me jeremy@vend.io on just about anything.
+Feel free to contact me jeremy@vennd.io on just about anything.
+
+vennd.io
 
 
 The components of Vennd:

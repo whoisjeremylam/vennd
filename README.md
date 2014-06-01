@@ -5,15 +5,13 @@ Vennd is a general purpose digital vending machine. Send Bitcoins to the digital
 
 Feel free to contact me jeremy@vennd.io on just about anything.
 
-vennd.io
-
-
 The components of Vennd:
 * VenndNativeFollower - Application which connects to single bitcoind instance
 * CounterpartyFollower - Application which connects to the Counterparty API. A single CounterpartyFollower instance can be configured to listen to multiple service addresses and assets
 * PaymentProcessor - Application to process Bitcoin and Counterparty payments
 * PaymentAuthorizer - TBA - Application to manually authorize payments
 
+For more information on how Vennd can be used, head over to vennd.io.
 
 Pre-requisites
 ==============

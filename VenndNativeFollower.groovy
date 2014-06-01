@@ -17,15 +17,19 @@ public class VenndNativeFollower {
     static satoshi = 100000000
     static String inAsset
     static String outAsset
+    static boolean outAssetDivisible
+    static boolean outAssetIssuanceDependent
     static int inceptionBlock
     static BigDecimal feeAmountPercentage
     static BigDecimal txFee
+    static BigDecimal refundTxFee
     static assetConfig
     static String listenerAddress
     static String paymentAddress
     static boolean testMode
     static int confirmationsRequired
     static int sleepIntervalms
+    static String outAssetNonDivisibleRoundRule
     static String databaseName
     static db
 
@@ -60,12 +64,36 @@ public class VenndNativeFollower {
         def Long outAmount
         def Long lastModifiedBlockId
         def String status
+        def Long refundAmount = 0
+        def String issuanceStatus
 
         public Payment(String inAssetValue, Long currentBlockValue, String txidValue, String sourceAddressValue, String destinationAddressValue, String outAssetValue, Long outAmountValue, Long lastModifiedBlockIdValue, Long originalAmount) {
             def row
             inAsset = inAssetValue
             outAsset = outAssetValue
             outAmount = outAmountValue
+            // Treat indivisible asset differently as they aren't multiplied by the satoshi factor
+            if (!outAssetDivisible) {
+                def Float outAmountFloat = outAssetDivisible / satoshi
+
+                if (outAssetNonDivisibleRoundRule == 'floor') {
+                    outAmount = Math.floor(outAmountFloat)
+                    refundAmount = 0
+                }
+                else if (outAssetNonDivisibleRoundRule == 'ceiling') {
+                    outAmount = Math.ceil(outAmountFloat)
+                    refundAmount = 0
+                }
+                else if (outAssetNonDivisibleRoundRule == 'roundRefund') {
+                    outAmount = Math.round(outAmountFloat)
+                    refundAmount = 0 // to do
+                }
+                else {
+                    outAmount = Math.round(outAmountFloat)
+                    refundAmount = 0
+                }
+
+            }
             currentBlock = currentBlockValue
             txid = txidValue
             lastModifiedBlockId = lastModifiedBlockIdValue
@@ -76,6 +104,13 @@ public class VenndNativeFollower {
             else {
                 status = 'valid'
             }
+
+            // If a precise amount of asset must be issued each time, payments must wait until the asset is issued
+            if (outAssetIssuanceDependent) {
+                issuanceStatus = status
+                status = 'waitIssuance'
+            }
+
 
             // Check if the send was performed TO an address registered via the API
             // If it was then payment should be swept into the central address
@@ -117,15 +152,19 @@ public class VenndNativeFollower {
         def iniConfig = new ConfigSlurper().parse(new File("VenndNativeFollower.ini").toURL())
         inAsset = iniConfig.inAssetName
         outAsset = iniConfig.outAssetName
+        outAssetDivisible = iniConfig.outAssetDivisible
+        outAssetIssuanceDependent = iniConfig.outAssetIssuanceDependent
         inceptionBlock = iniConfig.inceptionBlock
         feeAmountPercentage = iniConfig.feeAmountPercentage
         txFee = iniConfig.txFee
+        refundTxFee = iniConfig.refundTxFee
         testMode = iniConfig.testMode
         listenerAddress = iniConfig.listenerAddress
         paymentAddress = iniConfig.paymentAddress
         sleepIntervalms = iniConfig.sleepIntervalms
         databaseName = iniConfig.database.name
         confirmationsRequired = iniConfig.confirmationsRequired
+        outAssetNonDivisibleRoundRule = iniConfig.outAssetNonDivisibleRoundRule
 
         assetConfig = []
         iniConfig.asset.each { it ->
@@ -147,6 +186,7 @@ public class VenndNativeFollower {
         db.execute("create table if not exists fees(blockId string, txid string, feeAsset string, feeAmount integer)")
         db.execute("create table if not exists audit(blockId string, txid string, description string)")
         db.execute("create table if not exists payments(blockId integer, sourceTxid string, sourceAddress string, destinationAddress string, outAsset string, outAmount integer, status string, lastUpdatedBlockId integer)")
+        db.execute("create table if not exists issuances(blockId integer, sourceTxid string, destinationAddress string, asset string, amount integer, divisibility string, status string, lastUpdatedBlockId integer)")
         db.execute("create table if not exists addressMaps (counterpartyPaymentAddress string, nativePaymentAddress string, externalAddress string, counterpartyAddress string, counterpartyAssetName string, nativeAssetName string, UDF1 string, UDF2 string, UDF3 string, UDF4 string, UDF5 string)")
 
         db.execute("create unique index if not exists blocks1 on blocks(blockId)")
@@ -161,6 +201,7 @@ public class VenndNativeFollower {
         db.execute("create index if not exists outputAddresses2 on outputAddresses(address)")
         db.execute("create index if not exists payments1 on payments(blockId)")
         db.execute("create index if not exists payments1 on payments(sourceTxid)")
+        db.execute("create index if not exists issuances1 on issuances(blockId)")
         db.execute("create unique index if not exists addressMaps1 on addressMaps(counterpartyPaymentAddress)")
         db.execute("create unique index if not exists addressMaps2 on addressMaps(nativePaymentAddress)")
         db.execute("create unique index if not exists addressMaps3 on addressMaps(externalAddress)")
@@ -390,8 +431,20 @@ public class VenndNativeFollower {
                 println "insert into fees values (${currentBlock}, ${txid}, ${feeAsset}, ${feeAmount})"
                 db.execute("insert into fees values (${currentBlock}, ${txid}, ${feeAsset}, ${feeAmount})")
                 if (outAmount > 0) {
+                    if (outAssetIssuanceDependent) {
+                        // create table if not exists issuances(blockId integer, sourceTxid string, sourceAddress string, asset string, amount integer, divisibility string, status string, lastUpdatedBlockId integer)
+                        println "insert into issuances values (${currentBlock}, ${txid}, ${inputAddress}, ${outAsset}, ${payment.outAmount}, ${outAssetDivisible}, ${payment.issuanceStatus}, ${currentBlock})"
+                        db.execute("insert into issuances values (${currentBlock}, ${txid}, ${inputAddress}, ${outAsset}, ${payment.outAmount}, ${outAssetDivisible}, ${payment.issuanceStatus}, ${currentBlock})")
+                    }
+
                     println "insert into payments values (${payment.currentBlock}, ${payment.txid}, ${payment.sourceAddress}, ${payment.destinationAddress}, ${payment.outAsset}, ${payment.outAmount}, ${payment.status}, ${payment.lastModifiedBlockId})"
                     db.execute("insert into payments values (${payment.currentBlock}, ${payment.txid}, ${payment.sourceAddress}, ${payment.destinationAddress}, ${payment.outAsset}, ${payment.outAmount}, ${payment.status}, ${payment.lastModifiedBlockId})")
+
+                    // process a refund
+                    if (payment.refundAmount > 0) {
+                        println "insert into payments values (${payment.currentBlock}, ${payment.txid}, ${payment.sourceAddress}, ${payment.destinationAddress}, ${payment.inAsset}, ${payment.refundAmount}, ${payment.status}, ${payment.lastModifiedBlockId}) -- refund"
+                        db.execute("insert into payments values (${payment.currentBlock}, ${payment.txid}, ${payment.sourceAddress}, ${payment.destinationAddress}, ${payment.inAsset}, ${payment.refundAmount}, ${payment.status}, ${payment.lastModifiedBlockId})")
+                    }
                 }
             }
             db.execute("commit transaction")

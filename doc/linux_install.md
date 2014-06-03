@@ -50,6 +50,7 @@ Download Vennd
 It is recommended that all of the processes for a single instance of a vending machine runs in the same directory. The sqlite database must be shared between each of the processes and the user permissions can be restricted to a single directory.
 
 ```
+cd ~
 git clone https://github.com/whoisjeremylam/vennd
 mkdir vennd/logs
 ```

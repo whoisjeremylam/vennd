@@ -11,7 +11,7 @@ Each of the following INI files must be edited. Included below is a sample confi
 
 **VenndNativeFollower.ini**
 
-VenndNativeFollower is the process which connects to the Bitcoin API compatible alt-coin. It 'listens' for payments to the listner address. The coins listening addresss is then swept into the central holding address (paymentAddress).
+VenndNativeFollower is the process which connects to the Bitcoin API compatible alt-coin. It 'listens' for payments to the listener address. The coins received on the listening addresss are then swept into the central holding address (paymentAddress).
 
 ```ini
 testMode = false

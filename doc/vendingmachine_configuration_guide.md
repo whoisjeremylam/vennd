@@ -26,8 +26,13 @@ confirmationsRequired = 3
 
 listenerAddress = "1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd"    // The address which the gateway will receive the native alt-coin
 paymentAddress = "1BTCorgHwCg6u2YSAWKgS17qUad6kHmtQW"     // The address which the gateway will dispense the Counterparty asset
+outAssetDivisible = false                                 // Defines if the output asset from the vending machine is divisible
+outAssetIssuanceDependent = false
+outAssetNonDivisibleRoundRule = round // floor, round, ceiling, roundRefund (round and refund if the refund amount is less than TX fee)
+outAssetMultiplier = 1000                                 // 1000 MYCOIN is dispensed for each BTC that is received
 
-inAssetName = "BTC"                                       // A label representing the asset name for the alt-coin
+
+inAssetName = "BTC"                                       // BTC is a reserved word for bitcoin
 outAssetName = "MYCOIN"                                // This must match the name of the asset you created in Counterparty
 
 database.name = "mycoin.db"                           // The filename of the embedded SQL database

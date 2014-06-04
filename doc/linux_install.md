@@ -86,3 +86,4 @@ Configure Vennd to form a gateway between Bitcoin (or a Bitcoin API compatible a
 or
 
 Configure Vennd to create a vending machine
+https://github.com/whoisjeremylam/vennd/blob/master/doc/vendingmachine_configuration_guide.md

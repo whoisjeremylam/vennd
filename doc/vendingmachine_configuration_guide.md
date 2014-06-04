@@ -78,9 +78,18 @@ database.busyTimeout = 2000
 sleepIntervalms = 60000
 ```
 
-**Start Vennd**
+**Start Vennd on Linux**
+If you using the default installation of Groovy and followed the Linux installation instructions, the vending machine can be started by running the following commands in a Linux terminal
 ```sh
+cd ~/Vennd
 groovy VenndNativeFollower.groovy
 groovy PaymentProcessor.groovy
+```
+or if you installed the latest version of Groovy manually
+
+```sh
+cd ~/Vennd
+../groovy-binary-2.3.2/groovy VenndNativeFollower.groovy
+../groovy-binary-2.3.2/groovy PaymentProcessor.groovy
 ```
 

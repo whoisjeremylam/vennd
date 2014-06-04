@@ -18,11 +18,12 @@ The version of Groovy that is contained in the default repository is 1.8.6.
 sudo apt-get install groovy
 ```
 
-Or install Groovy 2.3.0 (preferred)
+Or install Groovy 2.3.2 (preferred)
 
 ```
-wget http://dl.bintray.com/groovy/maven/groovy-binary-2.3.0.zip
-unzip groovy-binary-2.3.0.zip
+cd ~
+wget http://dl.bintray.com/groovy/maven/groovy-binary-2.3.2.zip
+unzip groovy-binary-2.3.2.zip
 ```
 
 Download Sqlite

@@ -11,6 +11,7 @@ https://www.youtube.com/watch?v=eyzA5Lj1ajM
 Each of the following INI files must be edited. Included below is a sample configuration for a simple vending machine which dispenses 1000 MYCOIN for each Bitcoin that is received. The following processes must be configured and running:
 
 1) VenndNativeFollower - This process listens for BTC to be sent to the listener address of the vending machine
+
 2) PaymentProcessor - This process sends the MYCOIN Counterparty asset
 
 **VenndNativeFollower.ini**

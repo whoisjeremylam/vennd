@@ -2,6 +2,7 @@ Vending Machine
 ===============
 
 **Create Your Token on Counterparty**
+
 Prior to creating your vending machine, first issue an asset in Counterparty. Please note if your asset is divisible or indivisible. This is required to be specified in the configuration files.
 
 https://www.youtube.com/watch?v=eyzA5Lj1ajM

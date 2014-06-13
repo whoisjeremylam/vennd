@@ -20,6 +20,7 @@ inceptionBlock = 300043         // The block to start listening for service requ
 feeAmountPercentage = 0.1       // Fee amount in percentage for the vending machine to take. eg 0.1%
 txFee = 0.0004172               // Fee in absolute value to take for the costs of Counterparty transaction transmission
 confirmationsRequired = 3
+outAssetMultiplier = 1000
 
 listenerAddress = "LR5grCQB8FaxueX2UtvUbURho1qHuQrtFZ"    // The address which the gateway will receive the native alt-coin
 paymentAddress = "1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd"     // The address which the gateway will dispense the Counterparty asset

@@ -18,11 +18,12 @@ The version of Groovy that is contained in the default repository is 1.8.6.
 sudo apt-get install groovy
 ```
 
-Or install Groovy 2.3.0 (preferred)
+Or install Groovy 2.3.2 (preferred)
 
 ```
-wget http://dl.bintray.com/groovy/maven/groovy-binary-2.3.0.zip
-unzip groovy-binary-2.3.0.zip
+cd ~
+wget http://dl.bintray.com/groovy/maven/groovy-binary-2.3.2.zip
+unzip groovy-binary-2.3.2.zip
 ```
 
 Download Sqlite
@@ -50,6 +51,7 @@ Download Vennd
 It is recommended that all of the processes for a single instance of a vending machine runs in the same directory. The sqlite database must be shared between each of the processes and the user permissions can be restricted to a single directory.
 
 ```
+cd ~
 git clone https://github.com/whoisjeremylam/vennd
 mkdir vennd/logs
 ```
@@ -85,3 +87,4 @@ Configure Vennd to form a gateway between Bitcoin (or a Bitcoin API compatible a
 or
 
 Configure Vennd to create a vending machine
+https://github.com/whoisjeremylam/vennd/blob/master/doc/vendingmachine_configuration_guide.md

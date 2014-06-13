@@ -30,6 +30,7 @@ public class VenndNativeFollower {
     static int confirmationsRequired
     static int sleepIntervalms
     static String outAssetNonDivisibleRoundRule
+    static Long outAssetMultiplier
     static String databaseName
     static db
 
@@ -67,14 +68,14 @@ public class VenndNativeFollower {
         def Long refundAmount = 0
         def String issuanceStatus
 
-        public Payment(String inAssetValue, Long currentBlockValue, String txidValue, String sourceAddressValue, String destinationAddressValue, String outAssetValue, Long outAmountValue, Long lastModifiedBlockIdValue, Long originalAmount) {
+        public Payment(String inAssetValue, Long currentBlockValue, String txidValue, String sourceAddressValue, String destinationAddressValue, String outAssetValue, Long outAmountValue, Long lastModifiedBlockIdValue, Long originalAmount, boolean unclearSource) {
             def row
             inAsset = inAssetValue
             outAsset = outAssetValue
-            outAmount = outAmountValue
+            outAmount = outAmountValue * outAssetMultiplier
             // Treat indivisible asset differently as they aren't multiplied by the satoshi factor
             if (!outAssetDivisible) {
-                def Float outAmountFloat = outAssetDivisible / satoshi
+                def Float outAmountFloat = outAmount / satoshi
 
                 if (outAssetNonDivisibleRoundRule == 'floor') {
                     outAmount = Math.floor(outAmountFloat)
@@ -109,6 +110,11 @@ public class VenndNativeFollower {
             if (outAssetIssuanceDependent) {
                 issuanceStatus = status
                 status = 'waitIssuance'
+            }
+
+            // If the source address appeared to come from a wallet which isn't Counterwallet, default the payment to manual
+            if (unclearSource) {
+                status = 'manual'
             }
 
 
@@ -165,6 +171,7 @@ public class VenndNativeFollower {
         databaseName = iniConfig.database.name
         confirmationsRequired = iniConfig.confirmationsRequired
         outAssetNonDivisibleRoundRule = iniConfig.outAssetNonDivisibleRoundRule
+        outAssetMultiplier = iniConfig.outAssetMultiplier
 
         assetConfig = []
         iniConfig.asset.each { it ->
@@ -288,6 +295,7 @@ public class VenndNativeFollower {
         // Iterate through each raw transaction and get the parsed transaction by calling decoderawtransaction
         def parsedTransactions = []
         for (rawTransaction in rawtransactions) {
+            def notCounterwalletSend = false
             def inputAddresses = []
             def outputAddresses = []
             def amounts = [] //same position as address in outputAddresses
@@ -386,9 +394,20 @@ public class VenndNativeFollower {
                     }
                 }
 
+                // Check if this send was a counterwallet send
+                def uniqueInputAddresses = inputAddresses.unique()
+                if (uniqueInputAddresses.size() > 1) {
+                    notCounterwalletSend = true
+                }
+                def uniqueChangeAddresses = outputAddresses.unique()
+                def uniqueChangeAddressesWithoutInput = outputAddresses - uniqueInputAddresses[0] // for a counterwallet, after removing change address, send this should only leave 1 destination address
+                if (uniqueChangeAddressesWithoutInput.size() > 1) {
+                    notCounterwalletSend = true
+                }
+
                 // Only record if one of the input addresses is NOT the service address. ie we didn't initiate the send
                 if (inputAddresses.contains(listenerAddress) == false) {
-                    parsedTransactions.add([txid, inputAddresses, outputAddresses, inAmount, inAsset, outAmount, outAsset, calculatedFee, serviceAddress])
+                    parsedTransactions.add([txid, inputAddresses, outputAddresses, inAmount, inAsset, outAmount, outAsset, calculatedFee, serviceAddress, notCounterwalletSend])
                     println "Block ${currentBlock} found service call: ${currentBlock} ${txid} ${inputAddresses} ${outputAddresses} ${inAmount/satoshi} ${inAsset} -> ${outAmount/satoshi} ${outAsset} (${calculatedFee/satoshi} ${inAsset} fee collected)"
                 }
             }
@@ -409,12 +428,13 @@ public class VenndNativeFollower {
                 def outAmount = transaction[5]
                 def outAsset = transaction[6]
                 def feeAmount = transaction[7]
+                def notCounterwalletSend = transaction[9]
                 def feeAsset = inAsset
 
                 // there will only be 1 output for counterparty assets but not the case for native assets - ie change
                 // form a payment object which will determine the payment direction and source and destination addresses
                 // public Payment(String inAssetValue, Long currentBlockValue, String txidValue, String sourceAddressValue, String destinationAddressValue, String outAssetValue, Long outAmountValue, Long lastModifiedBlockIdValue, Long originalAmount)
-                def payment = new Payment(inAsset, currentBlock, txid, inputAddress, serviceAddress, outAsset, outAmount, currentBlock, inAmount)
+                def payment = new Payment(inAsset, currentBlock, txid, inputAddress, serviceAddress, outAsset, outAmount, currentBlock, inAmount, notCounterwalletSend)
 
                 println "insert into transactions values (${currentBlock}, ${txid})"
                 db.execute("insert into transactions values (${currentBlock}, ${txid})")

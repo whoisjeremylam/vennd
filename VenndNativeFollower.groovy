@@ -333,7 +333,7 @@ public class VenndNativeFollower {
 
             // Record the send
             if (found == true) {
-                def listenerAddressIndex = outputAddresses.findIndexOf {it = serviceAddress}
+                def listenerAddressIndex = outputAddresses.findIndexOf {it == serviceAddress}
                 inAmount = amounts[listenerAddressIndex] * satoshi
                 assert inAmount > 0
 

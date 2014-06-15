@@ -292,7 +292,7 @@ class CounterpartyFollower {
         log4j.info("Block ${currentBlock}: processing " + sends.size() + " sends")
         def transactions = []
         for (send in sends) {
-            assert send instanceof HashMap
+            //assert send instanceof HashMap
 
             def inputAddresses = []
             def outputAddresses = []

@@ -173,6 +173,36 @@ class CounterpartyFollower {
         db.execute("PRAGMA busy_timeout = 1000")
         db.execute("create table if not exists counterpartyBlocks (blockId integer, status string, duration integer)")
         db.execute("create unique index if not exists counterpartyBlocks1 on counterpartyBlocks(blockId)")
+        
+        db.execute("create table if not exists blocks (blockId integer, status string, duration integer)")
+        db.execute("create table if not exists transactions(blockId integer, txid string)")
+        db.execute("create table if not exists credits(blockIdSource integer, txid string, sourceAddress string, destinationAddress string, inAsset string, inAmount integer, outAsset string, outAmount integer, status string)")
+        db.execute("create table if not exists debits(blockIdSource integer, txid string, sourceAddress string, destinationAddress string, inAsset string, inAmount integer, outAsset string, outAmount integer, status string, lastUpdatedBlockId integer)")
+        db.execute("create table if not exists inputAddresses(txid string, address string)")
+        db.execute("create table if not exists outputAddresses(txid string, address string)")
+        db.execute("create table if not exists fees(blockId string, txid string, feeAsset string, feeAmount integer)")
+        db.execute("create table if not exists audit(blockId string, txid string, description string)")
+        db.execute("create table if not exists payments(blockId integer, sourceTxid string, sourceAddress string, destinationAddress string, outAsset string, outAmount integer, status string, lastUpdatedBlockId integer)")
+        db.execute("create table if not exists issuances(blockId integer, sourceTxid string, destinationAddress string, asset string, amount integer, divisibility string, status string, lastUpdatedBlockId integer)")
+        db.execute("create table if not exists addressMaps (counterpartyPaymentAddress string, nativePaymentAddress string, externalAddress string, counterpartyAddress string, counterpartyAssetName string, nativeAssetName string, UDF1 string, UDF2 string, UDF3 string, UDF4 string, UDF5 string)")
+
+        db.execute("create unique index if not exists blocks1 on blocks(blockId)")
+        db.execute("create index if not exists transactions1 on transactions(blockId)")
+        db.execute("create index if not exists transactions2 on transactions(txid)")
+        db.execute("create index if not exists credits1 on credits(blockIdSource)")
+        db.execute("create index if not exists credits2 on credits(txid)")
+        db.execute("create index if not exists fees1 on fees(blockId, txid)")
+        db.execute("create index if not exists inputAddresses1 on inputAddresses(txid)")
+        db.execute("create index if not exists inputAddresses2 on inputAddresses(address)")
+        db.execute("create index if not exists outputAddresses1 on outputAddresses(txid)")
+        db.execute("create index if not exists outputAddresses2 on outputAddresses(address)")
+        db.execute("create index if not exists payments1 on payments(blockId)")
+        db.execute("create index if not exists payments1 on payments(sourceTxid)")
+        db.execute("create index if not exists issuances1 on issuances(blockId)")
+        db.execute("create unique index if not exists addressMaps1 on addressMaps(counterpartyPaymentAddress)")
+        db.execute("create unique index if not exists addressMaps2 on addressMaps(nativePaymentAddress)")
+        db.execute("create unique index if not exists addressMaps3 on addressMaps(externalAddress)")
+        db.execute("create unique index if not exists addressMaps3 on addressMaps(counterpartyAddress)")
 
         // Check vital tables exist
         row = db.firstRow("select name from sqlite_master where type='table' and name='blocks'")
@@ -262,7 +292,7 @@ class CounterpartyFollower {
         log4j.info("Block ${currentBlock}: processing " + sends.size() + " sends")
         def transactions = []
         for (send in sends) {
-            assert send instanceof HashMap
+            //assert send instanceof HashMap
 
             def inputAddresses = []
             def outputAddresses = []

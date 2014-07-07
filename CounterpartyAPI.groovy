@@ -265,11 +265,12 @@ class CounterpartyAPI {
         def myParams
 
         if (testMode == false) {
-            myParams = [sourceAddress, destinationAddress, asset, amount, counterpartyTransactionEncoding, null, counterpartyMultisendPerBlock, null]
+            myParams = ["source":sourceAddress,"destination":destinationAddress,"asset":asset,"quantity":amount,"encoding":counterpartyTransactionEncoding]
+//            myParams = [sourceAddress, destinationAddress, asset, amount, counterpartyTransactionEncoding, null, counterpartyMultisendPerBlock, null]
 //            myParams = [sourceAddress, destinationAddress, asset, amount]
         }
         else {
-            myParams = ['12nY87y6qf4Efw5WZaTwgGeceXApRYAwC7', '142UYTzD1PLBcSsww7JxKLck871zRYG5D3', asset, 20000, counterpartyTransactionEncoding, null, counterpartyMultisendPerBlock]  // in test mode send only just enough for dust
+            myParams = ["source":'12nY87y6qf4Efw5WZaTwgGeceXApRYAwC7',"destination":'142UYTzD1PLBcSsww7JxKLck871zRYG5D3',"asset":asset,"quantity":20000]  // in test mode send only just enough for dust
         }
 
         def result = counterpartyHttpAsync.request( POST, JSON) { req ->

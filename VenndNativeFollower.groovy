@@ -450,7 +450,7 @@ public class VenndNativeFollower {
                 db.execute("insert into credits values (${currentBlock}, ${txid}, ${inputAddress}, '', ${inAsset}, ${inAmount}, ${outAsset}, ${outAmount}, 'valid')")
                 println "insert into fees values (${currentBlock}, ${txid}, ${feeAsset}, ${feeAmount})"
                 db.execute("insert into fees values (${currentBlock}, ${txid}, ${feeAsset}, ${feeAmount})")
-                if (outAmount > 0) {
+                if (payment.outAmount > 0) {
                     if (outAssetIssuanceDependent) {
                         // create table if not exists issuances(blockId integer, sourceTxid string, sourceAddress string, asset string, amount integer, divisibility string, status string, lastUpdatedBlockId integer)
                         println "insert into issuances values (${currentBlock}, ${txid}, ${inputAddress}, ${outAsset}, ${payment.outAmount}, ${outAssetDivisible}, ${payment.issuanceStatus}, ${currentBlock})"

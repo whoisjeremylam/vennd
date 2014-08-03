@@ -105,7 +105,7 @@ class CounterpartyAPI {
             Thread.sleep(100)
         }
 
-        println result
+        //println result
         return result.get()
     }
 
@@ -178,7 +178,8 @@ class CounterpartyAPI {
             def payloadJSON
             def myParams = [method: 'broadcast_tx',
                             id: 'test',
-                            params: [signedTransaction]
+                            params: [signed_tx_hex:signedTransaction],
+                            "jsonrpc": '2.0'
             ]
 
             payloadJSON = new groovy.json.JsonBuilder(myParams)
@@ -222,7 +223,8 @@ class CounterpartyAPI {
             def payloadJSON
             def myParams = [method: 'sign_tx',
                             id: 'test',
-                            params: [unsignedTransaction]
+                            params: [unsigned_tx_hex:unsignedTransaction],
+                            jsonrpc : '2.0'
             ]
 
             payloadJSON = new groovy.json.JsonBuilder(myParams)

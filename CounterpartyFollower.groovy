@@ -28,6 +28,8 @@ class CounterpartyFollower {
     static int confirmationsRequired
     static int sleepIntervalms
     static String databaseName
+    static auctionMode
+
     public class Asset {
         def String counterpartyAssetName
         def String nativeAssetName
@@ -129,6 +131,11 @@ class CounterpartyFollower {
                     }
                 }
             }
+
+            // disable immediate payments
+            if (auctionMode == true) {
+                outAmount = 0
+            }
         }
     }
 
@@ -148,6 +155,7 @@ class CounterpartyFollower {
         sleepIntervalms = iniConfig.sleepIntervalms
         databaseName = iniConfig.database.name
         confirmationsRequired = iniConfig.confirmationsRequired
+        auctionMode = iniConfig.auctionMode
 
         assetConfig = []
         iniConfig.asset.each { it ->
@@ -173,10 +181,10 @@ class CounterpartyFollower {
         db.execute("PRAGMA busy_timeout = 1000")
         db.execute("create table if not exists counterpartyBlocks (blockId integer, status string, duration integer)")
         db.execute("create unique index if not exists counterpartyBlocks1 on counterpartyBlocks(blockId)")
-        
+
         db.execute("create table if not exists blocks (blockId integer, status string, duration integer)")
         db.execute("create table if not exists transactions(blockId integer, txid string)")
-        db.execute("create table if not exists credits(blockIdSource integer, txid string, sourceAddress string, destinationAddress string, inAsset string, inAmount integer, outAsset string, outAmount integer, status string)")
+        db.execute("create table if not exists credits(timestamp integer, blockIdSource integer, txid string, sourceAddress string, destinationAddress string, inAsset string, inAmount integer, outAsset string, outAmount integer, status string)")
         db.execute("create table if not exists debits(blockIdSource integer, txid string, sourceAddress string, destinationAddress string, inAsset string, inAmount integer, outAsset string, outAmount integer, status string, lastUpdatedBlockId integer)")
         db.execute("create table if not exists inputAddresses(txid string, address string)")
         db.execute("create table if not exists outputAddresses(txid string, address string)")
@@ -191,6 +199,7 @@ class CounterpartyFollower {
         db.execute("create index if not exists transactions2 on transactions(txid)")
         db.execute("create index if not exists credits1 on credits(blockIdSource)")
         db.execute("create index if not exists credits2 on credits(txid)")
+        db.execute("create index if not exists credits3 on credits(timestamp)")
         db.execute("create index if not exists fees1 on fees(blockId, txid)")
         db.execute("create index if not exists inputAddresses1 on inputAddresses(txid)")
         db.execute("create index if not exists inputAddresses2 on inputAddresses(address)")
@@ -468,6 +477,11 @@ class CounterpartyFollower {
                 def feeAmount = transaction[7]
                 def feeAsset = inAsset
 
+                // Current timestamp
+                def now = new GregorianCalendar()
+                now.setTimeZone(TimeZone.getTimeZone("GMT"))
+                def int nowSeconds = now.time.time / 1000
+
                 // int currentBlockValue, String txidValue, String sourceAddressValue, String destinationAddressValue, String outAssetValue, String outAmountValue, int lastModifiedBlockIdValue, int originalAmount
                 // there will only be 1 output for counterparty assets but not the case for native assets - ie change
                 // form a payment object which will determine the payment direction and source and destination addresses
@@ -485,8 +499,8 @@ class CounterpartyFollower {
                     db.execute("insert into outputAddresses values (${txid}, ${outputAddress})")
                 }
 
-                log4j.info("insert into credits values (${currentBlock}, ${txid}, ${inputAddress}, ${serviceAddress}, ${inAsset}, ${inAmount}, ${outAsset}, ${outAmount}, 'valid')")
-                db.execute("insert into credits values (${currentBlock}, ${txid}, ${inputAddress}, ${serviceAddress}, ${inAsset}, ${inAmount}, ${outAsset}, ${outAmount}, 'valid')")
+                log4j.info("insert into credits values (${nowSeconds}, ${currentBlock}, ${txid}, ${inputAddress}, ${serviceAddress}, ${inAsset}, ${inAmount}, ${outAsset}, ${outAmount}, 'valid')")
+                db.execute("insert into credits values (${nowSeconds}, ${currentBlock}, ${txid}, ${inputAddress}, ${serviceAddress}, ${inAsset}, ${inAmount}, ${outAsset}, ${outAmount}, 'valid')")
                 log4j.info("insert into fees values (${currentBlock}, ${txid}, ${feeAsset}, ${feeAmount})")
                 db.execute("insert into fees values (${currentBlock}, ${txid}, ${feeAsset}, ${feeAmount} )")
                 if (outAmount > 0) {

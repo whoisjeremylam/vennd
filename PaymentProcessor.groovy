@@ -26,7 +26,6 @@ class PaymentProcessor {
 
 
     class Payment {
-        //blockIdSource integer, txid string, sourceAddress string, inAsset string, inAmount integer, outAsset string, outAmount integer, status string, lastUpdatedBlockId integer
         def blockIdSource
         def txid
         def sourceAddress
@@ -35,8 +34,9 @@ class PaymentProcessor {
         def outAmount
         def status
         def lastUpdatedBlockId
+        def rowId
 
-        public Payment(blockIsSourceValue, txidValue, sourceAddressValue, destinationAddressValue, outAssetValue, outAmountValue, statusValue, lastUpdatedBlockIdValue) {
+        public Payment(blockIsSourceValue, txidValue, sourceAddressValue, destinationAddressValue, outAssetValue, outAmountValue, statusValue, lastUpdatedBlockIdValue, rowIdValue) {
             blockIdSource = blockIsSourceValue
             txid = txidValue
             sourceAddress = sourceAddressValue
@@ -45,6 +45,7 @@ class PaymentProcessor {
             outAmount = outAmountValue
             status = statusValue
             lastUpdatedBlockId = lastUpdatedBlockIdValue
+            rowId = rowIdValue
         }
     }
 
@@ -126,7 +127,7 @@ class PaymentProcessor {
         def Payment result
         def row
 
-        row = db.firstRow("select * from payments where status='authorized' order by blockId")
+        row = db.firstRow("select *, rowid from payments where status='authorized' order by blockId")
 
         if (row == null) result = null
         else {
@@ -140,8 +141,9 @@ class PaymentProcessor {
                 def outAmount = row.outAmount
                 def status = row.status
                 def lastUpdated = row.lastUpdatedBlockId
+                def rowId = row.rowid
 
-                result = new Payment(blockIdSource, txid, sourceAddress, destinationAddress, outAsset, outAmount, status, lastUpdated)
+                result = new Payment(blockIdSource, txid, sourceAddress, destinationAddress, outAsset, outAmount, status, lastUpdated, rowId)
             }
         }
 
@@ -179,12 +181,12 @@ class PaymentProcessor {
         // send transaction
         try {
             counterpartyAPI.broadcastSignedTransaction(signedTransaction, log4j)
-            log4j.info("update payments set status='complete', lastUpdatedBlockId = ${currentBlock} where blockId = ${blockIdSource} and sourceTxid = ${payment.txid}")
-            db.execute("update payments set status='complete', lastUpdatedBlockId = ${currentBlock} where blockId = ${blockIdSource} and sourceTxid = ${payment.txid}")
+            log4j.info("update payments set status='complete', lastUpdatedBlockId = ${currentBlock} where blockId = ${blockIdSource} and sourceTxid = ${payment.txid} and rowid=${payment.rowId}")
+            db.execute("update payments set status='complete', lastUpdatedBlockId = ${currentBlock} where blockId = ${blockIdSource} and sourceTxid = ${payment.txid} and rowid=${payment.rowId}")
         }
         catch (Throwable e) {
-            log4j.info("update payments set status='error', lastUpdatedBlockId = ${currentBlock} where blockId = ${blockIdSource} and sourceTxid = ${payment.txid}")
-            db.execute("update payments set status='error', lastUpdatedBlockId = ${currentBlock} where blockId = ${blockIdSource} and sourceTxid = ${payment.txid}")
+            log4j.info("update payments set status='error', lastUpdatedBlockId = ${currentBlock} where blockId = ${blockIdSource} and sourceTxid = ${payment.txid} and rowid=${payment.rowId}")
+            db.execute("update payments set status='error', lastUpdatedBlockId = ${currentBlock} where blockId = ${blockIdSource} and sourceTxid = ${payment.txid} and rowid=${payment.rowId}")
 
             assert e == null
         }

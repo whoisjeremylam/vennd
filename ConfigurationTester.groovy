@@ -1,6 +1,13 @@
 /**
  * Created by whoisjeremylam on 3/06/14.
  */
+
+import org.apache.log4j.*
+import groovy.sql.Sql
+
+@Grab(group='log4j', module='log4j', version='1.2.17')
+@Grab(group='org.xerial', module='sqlite-jdbc', version='3.7.2')
+
 class ConfigurationTester {
     static counterpartyAPI
     static bitcoinAPI
@@ -127,6 +134,7 @@ class ConfigurationTester {
         def assetBalance
         try {
             assetBalance =  counterpartyTest.getBalances(paymentAddress)
+	    println assetBalance
             println "Ok!"
         }
         catch (Throwable e) {
@@ -135,6 +143,27 @@ class ConfigurationTester {
 
         if (databaseName != paymentDatabaseName) {
             println "Warning - The database names in VenndNativeFollower.ini and PaymentProcessor.ini doesn't match"
+        }
+
+	print "Connecting to DB..."
+	try {
+        	def db = Sql.newInstance("jdbc:sqlite:${databaseName}", "org.sqlite.JDBC")
+        	db.execute("PRAGMA busy_timeout = 1000")
+		println "Ok!"
+	}
+	catch (Throwable e) {
+		println e.getMessage()
+	}
+
+	print "Initialising logger..."
+	try {
+        	def logger = new Logger()
+        	PropertyConfigurator.configure("VenndNativeFollower_log4j.properties")
+        	def log4j = logger.getRootLogger()
+		println "Ok!"
+	}
+        catch (Throwable e) {
+                println e.getMessage()
         }
 
         System.exit(0)

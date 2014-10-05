@@ -72,6 +72,7 @@ testMode = false
 
 bitcoin.walletPassphrase = "Imdyingtocatchmybreath"                           // The wallet password currently needs to be the same for bitcoin and the alt-coin
 walletUnlockSeconds = 30
+txFee = 0.0000125
 
 database.name = "mycoin.db"
 database.busyTimeout = 2000

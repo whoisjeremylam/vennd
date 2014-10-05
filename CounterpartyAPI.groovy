@@ -9,6 +9,7 @@ import static groovyx.net.http.ContentType.*
 import static groovyx.net.http.Method.*
 
 class CounterpartyAPI {
+    def satoshi = 100000000
     private String counterpartyTransactionEncoding
     private String counterpartyRpcURL
     private String counterpartyRpcUser
@@ -263,11 +264,11 @@ class CounterpartyAPI {
     }
 
 
-    public createSend(sourceAddress, destinationAddress, asset, amount, testMode, log4j) {
+    public createSend(sourceAddress, destinationAddress, asset, amount, fee, testMode, log4j) {
         def myParams
 
         if (testMode == false) {
-            myParams = ["source":sourceAddress,"destination":destinationAddress,"asset":asset,"quantity":amount,"encoding":counterpartyTransactionEncoding,"allow_unconfirmed_inputs":counterpartyMultisendPerBlock]
+            myParams = ["source":sourceAddress,"destination":destinationAddress,"asset":asset,"quantity":amount,"encoding":counterpartyTransactionEncoding,"allow_unconfirmed_inputs":counterpartyMultisendPerBlock,"fee":fee*satoshi]
 //            myParams = [sourceAddress, destinationAddress, asset, amount, counterpartyTransactionEncoding, null, counterpartyMultisendPerBlock, null]
 //            myParams = [sourceAddress, destinationAddress, asset, amount]
         }

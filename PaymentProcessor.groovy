@@ -18,6 +18,7 @@ class PaymentProcessor {
     static String databaseName
     static String counterpartyTransactionEncoding
     static int walletUnlockSeconds
+    static BigDecimal txFee
 
     static logger
     static log4j
@@ -69,6 +70,7 @@ class PaymentProcessor {
         databaseName = iniConfig.database.name
         counterpartyTransactionEncoding = iniConfig.counterpartyTransactionEncoding
         walletUnlockSeconds = iniConfig.walletUnlockSeconds
+        txFee = iniConfig.txFee
 
         // Init database
         def row
@@ -166,7 +168,7 @@ class PaymentProcessor {
         bitcoinAPI.unlockBitcoinWallet(walletPassphrase, 30)
 
         // Create the (unsigned) counterparty send transaction
-        def unsignedTransaction = counterpartyAPI.createSend(sourceAddress, destinationAddress, asset, amount, testMode, log4j)
+        def unsignedTransaction = counterpartyAPI.createSend(sourceAddress, destinationAddress, asset, amount, txFee, testMode, log4j)
         assert unsignedTransaction instanceof java.lang.String
         assert unsignedTransaction != null
         if (!(unsignedTransaction instanceof java.lang.String)) { // catch non technical error in RPC call
